@@ -21,6 +21,7 @@ EventMachine::WebSocket.start(:host=>"0.0.0.0", :port=>PORT) do |ws|
 		puts "join"
 		connections.push(ws)
 		ws.send "u:#{url}"
+		connections.each do |c| c.send "c:#{connections.length}" end
 	end
 	ws.onmessage do |data|
 		cmd = data.split(":", 2)
@@ -40,6 +41,7 @@ EventMachine::WebSocket.start(:host=>"0.0.0.0", :port=>PORT) do |ws|
 	ws.onclose do
 		puts "close"
 		connections.delete_if do |c| c == ws end
+		connections.each do |c| c.send "c:#{connections.length}" end
 	end
 end
 

@@ -32,6 +32,9 @@ EnabledTabManager.prototype.remove = function(tid)
 			break;
 		}
 	}
+	var obj = new Object();
+	obj.title = "AutoSurfing";
+	chrome.browserAction.setTitle(obj);
 };
 var tabman = new EnabledTabManager();
 
@@ -59,7 +62,8 @@ function splitcmd(str)
 
 chrome.browserAction.onClicked.addListener(function(tab){
 	var url = "";
-	var ws = new WebSocket("ws://skaphy.dyndns.info:12355/");
+	//var ws = new WebSocket("ws://skaphy.dyndns.info:12355/");
+	var ws = new WebSocket("ws://192.168.24.55:8088/");
 	ws.onopen = function()
 	{
 	};
@@ -68,10 +72,16 @@ chrome.browserAction.onClicked.addListener(function(tab){
 		var cmd = splitcmd(e.data);
 		if(cmd[0] == "u")
 		{
-			console.log(cmd[1]);
+			url = cmd[1];
 			var obj = new Object();
 			obj.url = cmd[1];
 			chrome.tabs.update(tab.id, obj);
+		}
+		else if(cmd[0] == "c")
+		{
+			var obj = new Object();
+			obj.title = "AutoSurfing (" + cmd[1] + ")";
+			chrome.browserAction.setTitle(obj);
 		}
 	};
 	ws.onclose = function()
