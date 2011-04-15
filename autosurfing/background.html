@@ -1,26 +1,44 @@
 <html>
 <head>
 <script>
-var enabledTabs = new Array();
-
-function isTabEnabled(tid)
+var EnabledTabManager = function()
+{
+	this.tabs = new Array();
+};
+EnabledTabManager.prototype.add = function(tid)
+{
+	this.tabs.push(tid);
+};
+EnabledTabManager.prototype.isEnabled = function(tid)
 {
 	var flag = false;
-	for (var i = 0; i < enabledTabs.length; i++)
+	for (var i = 0; i < this.tabs.length; i++)
 	{
-		if (tid == enabledTabs[i])
+		if (tid == this.tabs[i])
 		{
 			flag = true;
 			break;
 		}
 	}
 	return flag;
-}
+};
+EnabledTabManager.prototype.remove = function(tid)
+{
+	for (var i = 0; i < this.tabs.length; i++)
+	{
+		if (this.tabs[i] == tid)
+		{
+			this.tabs.splice(i, 1);
+			break;
+		}
+	}
+};
+var tabman = new EnabledTabManager();
 
 function setIcon(tid)
 {
 	if (typeof(tid) == "undefined") return;
-	var e = isTabEnabled(tid);
+	var e = tabman.isEnabled(tid);
 	var icon = new Object();
 	if (e) icon.path = "icon2.png";
 	else icon.path = "icon1.png";
@@ -48,7 +66,7 @@ chrome.browserAction.onClicked.addListener(function(tab){
 	{
 	};
 
-	enabledTabs.push(tab.id);
+	tabman.add(tab.id);
 	setIcon(tab.id);
 
 	chrome.tabs.onUpdated.addListener(function(tid, obj, _tab)
@@ -67,6 +85,7 @@ chrome.browserAction.onClicked.addListener(function(tab){
 		if (tid == tab.id)
 		{
 			ws.close();
+			tabman.remove(tid);
 		}
 	});
 });
