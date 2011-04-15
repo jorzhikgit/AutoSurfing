@@ -64,6 +64,10 @@ chrome.browserAction.onClicked.addListener(function(tab){
 	};
 	ws.onclose = function()
 	{
+		ws.close();	// it is not requied?
+		ws = null;
+		tabman.remove(tab.id);
+		setIcon(tab.id);
 	};
 
 	tabman.add(tab.id);
