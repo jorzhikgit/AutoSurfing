@@ -24,12 +24,18 @@ Thread.new do
 		res.body = "use /redirect, /current or /users"
 	end
 	srv.mount_proc("/redirect") do |req, res|
-		res.body = "<html><body><a href=\"#{url}\">#{url}</a></body></html>"
+		curl = url.gsub("\"", "&quot;")
+		curl = curl.gsub("<", "&lt;")
+		curl = curl.gsub(">", "&gt;")
+		res.body = "<html><body><a href=\"#{curl}\">#{curl}</a></body></html>"
 		res["location"] = url
 		res.status = 302
 	end
 	srv.mount_proc("/current") do |req, res|
-		res.body = "<html><body><a href=\"#{url}\">#{url}</a></body></html>"
+		curl = url.gsub("\"", "&quot;")
+		curl = curl.gsub("<", "&lt;")
+		curl = curl.gsub(">", "&gt;")
+		res.body = "<html><body><a href=\"#{curl}\">#{curl}</a></body></html>"
 		res["Content-type"] = "text/html"
 	end
 	srv.mount_proc("/users") do |req, res|
