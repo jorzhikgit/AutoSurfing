@@ -1,0 +1,13 @@
+{
+	"name": "AutoSurfing",
+	"version": "1.0",
+	"description": "auto surfing www by other users",
+	"background_page": "background.html",
+	"browser_action": {
+		"default_title": "AutoSurfing",
+		"default_icon": "icon1.png"
+	},
+	"permissions": [
+		"tabs"
+	]
+}

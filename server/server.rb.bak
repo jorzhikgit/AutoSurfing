@@ -1,0 +1,37 @@
+#!/usr/bin/ruby
+
+require 'uri'
+require 'rubygems'
+require 'rev/websocket'
+
+PORT=8088
+
+class AutoSurfing < Rev::WebSocket
+	def initialize(p)
+		super
+		@url = "http://yahoo.co.jp"
+	end
+	def on_open
+		puts "open"
+		puts "send url: #{@url}"
+		send_message(@url)
+	end
+	def on_message(data)
+		if data =~ /^https?:\/\/.*/
+			@url = data
+			puts "changed url: #{@url}"
+			send_message(data)
+		else
+			puts "invalid url: #{data}"
+		end
+	end
+	def on_close
+		puts "close"
+	end
+end
+
+server = Rev::WebSocketServer.new('0.0.0.0', PORT, AutoSurfing)
+server.attach(Rev::Loop.default)
+
+Rev::Loop.default.run
+

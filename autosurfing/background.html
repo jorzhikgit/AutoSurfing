@@ -1,0 +1,69 @@
+<html>
+<head>
+<script>
+var enabledTabs = new Array();
+
+chrome.tabs.onSelectionChanged.addListener(function(tid, selinfo){
+	var flag = false;
+	for (var i = 0; i < enabledTabs.length; i++)
+	{
+		if (tid == enabledTabs[i])
+		{
+			flag = true;
+			break;
+		}
+	}
+	if (flag == true)
+	{
+		// set icon
+		var icon = new Object();
+		icon.path = "icon2.png";
+		chrome.browserAction.setIcon(icon);
+	}
+	else
+	{
+		// set icon
+		var icon = new Object();
+		icon.path = "icon1.png";
+		chrome.browserAction.setIcon(icon);
+	}
+});
+
+chrome.browserAction.onClicked.addListener(function(tab){
+	var url = "";
+	var ws = new WebSocket("ws://skaphy.dyndns.info:12355/");
+	ws.onopen = function()
+	{
+	};
+	ws.onmessage = function(e)
+	{
+		url = e.data;
+		var obj = new Object();
+		obj.url = e.data;
+		chrome.tabs.update(tab.id, obj);
+	};
+	ws.onclose = function()
+	{
+	};
+
+	// set icon
+	var icon = new Object();
+	icon.path = "icon2.png";
+	chrome.browserAction.setIcon(icon);
+
+	enabledTabs.push(tab.id);
+
+	chrome.tabs.onUpdated.addListener(function(tid, obj, _tab)
+	{
+		if (obj.status == "loading" && tid == tab.id && typeof(obj.url) != "undefined")
+		{
+			if (url != obj.url)
+			{
+				ws.send(obj.url);
+			}
+		}
+	});
+});
+</script>
+</head>
+</html>
