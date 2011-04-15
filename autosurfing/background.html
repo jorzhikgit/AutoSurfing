@@ -49,6 +49,14 @@ chrome.tabs.onSelectionChanged.addListener(function(tid, selinfo){
 	setIcon(tid);
 });
 
+function splitcmd(str)
+{
+	return [
+		str.slice(0, str.search(":")),
+		str.slice(str.search(":")+1)
+	];
+}
+
 chrome.browserAction.onClicked.addListener(function(tab){
 	var url = "";
 	var ws = new WebSocket("ws://skaphy.dyndns.info:12355/");
@@ -57,10 +65,14 @@ chrome.browserAction.onClicked.addListener(function(tab){
 	};
 	ws.onmessage = function(e)
 	{
-		url = e.data;
-		var obj = new Object();
-		obj.url = e.data;
-		chrome.tabs.update(tab.id, obj);
+		var cmd = splitcmd(e.data);
+		if(cmd[0] == "u")
+		{
+			console.log(cmd[1]);
+			var obj = new Object();
+			obj.url = cmd[1];
+			chrome.tabs.update(tab.id, obj);
+		}
 	};
 	ws.onclose = function()
 	{
@@ -79,7 +91,7 @@ chrome.browserAction.onClicked.addListener(function(tab){
 		{
 			if (url != obj.url)
 			{
-				ws.send(obj.url);
+				ws.send("u:" + obj.url);
 			}
 		}
 	});

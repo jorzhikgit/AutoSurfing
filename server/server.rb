@@ -20,15 +20,21 @@ EventMachine::WebSocket.start(:host=>"0.0.0.0", :port=>PORT) do |ws|
 	ws.onopen do
 		puts "join"
 		connections.push(ws)
-		ws.send url
+		ws.send "u:#{url}"
 	end
 	ws.onmessage do |data|
-		if data =~ /^https?:\/\/.*/
-			url = data
-			puts "changed url: #{url}"
-			connections.each do |c| c.send url end
-		else
-			puts "invalid url: #{data}"
+		cmd = data.split(":", 2)
+		case cmd[0]
+			when "u"
+				if cmd[1] =~ /^https?:\/\/.*/
+					url = cmd[1]
+					puts "changed url: #{url}"
+					connections.each do |c| c.send "u:#{url}" end
+				else
+					puts "invalid url: #{cmd[1]}"
+				end
+			else
+				puts "invalid command receive"
 		end
 	end
 	ws.onclose do
