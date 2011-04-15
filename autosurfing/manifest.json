@@ -1,6 +1,6 @@
 {
 	"name": "AutoSurfing",
-	"version": "1.0",
+	"version": "1.10",
 	"description": "auto surfing www by other users",
 	"background_page": "background.html",
 	"browser_action": {
