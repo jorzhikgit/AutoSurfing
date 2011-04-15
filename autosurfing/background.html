@@ -3,7 +3,8 @@
 <script>
 var enabledTabs = new Array();
 
-chrome.tabs.onSelectionChanged.addListener(function(tid, selinfo){
+function isTabEnabled(tid)
+{
 	var flag = false;
 	for (var i = 0; i < enabledTabs.length; i++)
 	{
@@ -13,20 +14,21 @@ chrome.tabs.onSelectionChanged.addListener(function(tid, selinfo){
 			break;
 		}
 	}
-	if (flag == true)
-	{
-		// set icon
-		var icon = new Object();
-		icon.path = "icon2.png";
-		chrome.browserAction.setIcon(icon);
-	}
-	else
-	{
-		// set icon
-		var icon = new Object();
-		icon.path = "icon1.png";
-		chrome.browserAction.setIcon(icon);
-	}
+	return flag;
+}
+
+function setIcon(tid)
+{
+	if (typeof(tid) == "undefined") return;
+	var e = isTabEnabled(tid);
+	var icon = new Object();
+	if (e) icon.path = "icon2.png";
+	else icon.path = "icon1.png";
+	chrome.browserAction.setIcon(icon);
+}
+
+chrome.tabs.onSelectionChanged.addListener(function(tid, selinfo){
+	setIcon(tid);
 });
 
 chrome.browserAction.onClicked.addListener(function(tab){
@@ -46,12 +48,8 @@ chrome.browserAction.onClicked.addListener(function(tab){
 	{
 	};
 
-	// set icon
-	var icon = new Object();
-	icon.path = "icon2.png";
-	chrome.browserAction.setIcon(icon);
-
 	enabledTabs.push(tab.id);
+	setIcon(tab.id);
 
 	chrome.tabs.onUpdated.addListener(function(tid, obj, _tab)
 	{
@@ -61,6 +59,14 @@ chrome.browserAction.onClicked.addListener(function(tab){
 			{
 				ws.send(obj.url);
 			}
+		}
+	});
+
+	chrome.tabs.onRemoved.addListener(function(tid, obj)
+	{
+		if (tid == tab.id)
+		{
+			ws.close();
 		}
 	});
 });
