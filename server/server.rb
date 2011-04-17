@@ -12,13 +12,6 @@ connections = []
 url = "http://yahoo.co.jp"
 
 Thread.new do
-	while true
-		sleep 60
-		puts "Current users: #{connections.length}"
-	end
-end
-
-Thread.new do
 	srv = WEBrick::HTTPServer.new({:BindAddress => '0.0.0.0', :Port => APIPORT})
 	srv.mount_proc("/") do |req, res|
 		res.body = "use /redirect, /current or /users"
