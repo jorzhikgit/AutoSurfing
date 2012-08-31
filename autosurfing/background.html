@@ -1,6 +1,8 @@
 <html>
 <head>
 <script>
+var wsurl = "ws://skaphy.dyndns.info:12355/";
+
 var EnabledTabManager = function()
 {
 	this.tabs = new Array();
@@ -62,7 +64,7 @@ function splitcmd(str)
 
 chrome.browserAction.onClicked.addListener(function(tab){
 	var url = "";
-	var ws = new WebSocket("ws://skaphy.dyndns.info:12355/");
+	var ws = new WebSocket(wsurl);
 	ws.onopen = function()
 	{
 	};
